@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Online Examination</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(to right, #36d1dc, #5b86e5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.box {
+    width: 500px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.hidden { display: none; }
+
+.timer {
+    color: red;
+    text-align: right;
+}
+
+#score {
+    white-space: pre-line;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Online Examination</h2>
+
+<!-- LOGIN -->
+<div id="login">
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+    <button onclick="startExam()">Start Exam</button>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<!-- EXAM -->
+<div id="exam" class="hidden">
+
+<div class="timer">Time: <span id="time">20</span></div>
+
+<p>1. HTML stands for?</p>
+<input type="radio" name="q1" value="1"> Hyper Text Markup Language<br>
+<input type="radio" name="q1" value="0"> High Text Machine<br>
+
+<p>2. CSS used for?</p>
+<input type="radio" name="q2" value="1"> Styling<br>
+<input type="radio" name="q2" value="0"> Database<br>
+
+<p>3. JS is?</p>
+<input type="radio" name="q3" value="1"> Programming Language<br>
+<input type="radio" name="q3" value="0"> Hardware<br>
+
+<button onclick="submitExam()">Submit</button>
+
+</div>
+
+<!-- RESULT -->
+<div id="result" class="hidden">
+    <h3 id="score"></h3>
+    <button onclick="restart()">Go Back</button>
+</div>
+
+</div>
+
+<script>
+let time = 20;
+let timer;
+
+// LOGIN
+function login() {
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
+
+    if(u !== "" && p !== "") {
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+    } else {
+        alert("Enter username and password");
+    }
+}
+
+// START EXAM
+function startExam() {
+    document.getElementById("dashboard").classList.add("hidden");
+    document.getElementById("exam").classList.remove("hidden");
+
+    timer = setInterval(() => {
+        time--;
+        document.getElementById("time").innerText = time;
+
+        if(time === 0) {
+            submitExam();
+        }
+    }, 1000);
+}
+
+// SUBMIT EXAM (FINAL)
+function submitExam() {
+    clearInterval(timer);
+
+    let score = 0;
+    let result = "";
+
+    const correctAnswers = {
+        q1: "1",
+        q2: "1",
+        q3: "1"
+    };
+
+    const correctText = {
+        q1: "Hyper Text Markup Language",
+        q2: "Styling",
+        q3: "Programming Language"
+    };
+
+    const optionText = {
+        q1: ["High Text Machine", "Hyper Text Markup Language"],
+        q2: ["Database", "Styling"],
+        q3: ["Hardware", "Programming Language"]
+    };
+
+    ["q1","q2","q3"].forEach(q => {
+        let selected = document.querySelector(`input[name="${q}"]:checked`);
+
+        if(selected) {
+            let selectedValue = selected.value;
+            let selectedLabel = optionText[q][selectedValue];
+
+            if(selectedValue === correctAnswers[q]) {
+                score++;
+                result += "✅ " + q.toUpperCase() + ": Correct (" + selectedLabel + ")\n";
+            } else {
+                result += "❌ " + q.toUpperCase() + ": Wrong\n";
+                result += "Your Answer: " + selectedLabel + "\n";
+                result += "Correct Answer: " + correctText[q] + "\n\n";
+            }
+        } else {
+            result += "❌ " + q.toUpperCase() + ": Not Answered\n";
+            result += "Correct Answer: " + correctText[q] + "\n\n";
+        }
+    });
+
+    document.getElementById("exam").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+
+    document.getElementById("score").innerText =
+        "Score: " + score + "/3\n\n" + result;
+}
+
+// LOGOUT
+function logout() {
+    location.reload();
+}
+
+// RESTART
+function restart() {
+    location.reload();
+}
+</script>
+
+</body>
+</html>
